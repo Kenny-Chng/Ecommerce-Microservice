@@ -1,17 +1,22 @@
 package main
 
 import (
-  "context"
+	"context"
 	"fmt"
+	"os"
+	"os/signal"
 
-	"github.com/Kenny-Chng/Go-Microservice.git/application"
+  "github.com/Kenny-Chng/Go-Microservice.git/application"
 )
 
 func main() {
-  app := application.New()
+	app := application.New(application.LoadConfig())
 
-  err := app.Start(context.TODO())
-  if err != nil {
-    fmt.Println("failed to start app:", err)
-  }
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	err := app.Start(ctx)
+	if err != nil {
+		fmt.Println("failed to start app:", err)
+	}
 }
